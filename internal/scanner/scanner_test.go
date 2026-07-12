@@ -6,17 +6,19 @@ import (
 	"testing"
 )
 
-func TestScan(t *testing.T) {
+func TestScanner(t *testing.T) {
 	root := filepath.Join("testdata", "gallery")
 
-	s := New([]string{root})
+	s := New(Config{
+		Roots: []string{root},
+	})
 
 	files, err := s.Scan(context.Background())
 	if err != nil {
 		t.Fatalf("Scan failed: %v", err)
 	}
 
-	t.Run("Find supported images", func(t *testing.T) {
+	t.Run("find supported images", func(t *testing.T) {
 		expected := map[string]struct{}{
 			"cat.jpg":    {},
 			"dog.png":    {},
@@ -32,7 +34,7 @@ func TestScan(t *testing.T) {
 		}
 	})
 
-	t.Run("Ignore unsupported files", func(t *testing.T) {
+	t.Run("ignore unsupported files", func(t *testing.T) {
 		for _, file := range files {
 			switch filepath.Base(file.Path) {
 			case "readme.txt", "jeffsfiles.pdf":
@@ -41,7 +43,7 @@ func TestScan(t *testing.T) {
 		}
 	})
 
-	t.Run("Skip hidden directories", func(t *testing.T) {
+	t.Run("skip hidden directories", func(t *testing.T) {
 		for _, file := range files {
 			if filepath.Base(file.Path) == "nuclearlaunchcode.txt" {
 				t.Fatal("Hidden file entered the scanner")
@@ -49,12 +51,14 @@ func TestScan(t *testing.T) {
 		}
 	})
 
-	t.Run("Deduplicates overlapping roots", func(t *testing.T) {
+	t.Run("deduplicates overlapping roots", func(t *testing.T) {
 		root := filepath.Join("testdata", "duplicate")
 
-		s := New([]string{
-			root,
-			root,
+		s := New(Config{
+			Roots: []string{
+				root,
+				root,
+			},
 		})
 
 		files, err := s.Scan(context.Background())
