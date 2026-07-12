@@ -15,7 +15,7 @@ func TestScanner(t *testing.T) {
 
 	files, err := s.Scan(context.Background())
 	if err != nil {
-		t.Fatalf("Scan failed: %v", err)
+		t.Fatalf("scan failed: %v", err)
 	}
 
 	t.Run("find supported images", func(t *testing.T) {
@@ -30,7 +30,7 @@ func TestScanner(t *testing.T) {
 		}
 
 		if len(expected) != 0 {
-			t.Fatalf("Missing files: %v", expected)
+			t.Fatalf("missing files: %v", expected)
 		}
 	})
 
@@ -38,7 +38,7 @@ func TestScanner(t *testing.T) {
 		for _, file := range files {
 			switch filepath.Base(file.Path) {
 			case "readme.txt", "jeffsfiles.pdf":
-				t.Fatalf("Scanner returned unsupported files %q", file.Path)
+				t.Fatalf("scanner returned unsupported files %q", file.Path)
 			}
 		}
 	})
@@ -46,7 +46,7 @@ func TestScanner(t *testing.T) {
 	t.Run("skip hidden directories", func(t *testing.T) {
 		for _, file := range files {
 			if filepath.Base(file.Path) == "nuclearlaunchcode.txt" {
-				t.Fatal("Hidden file entered the scanner")
+				t.Fatal("hidden file entered the scanner")
 			}
 		}
 	})
@@ -63,11 +63,19 @@ func TestScanner(t *testing.T) {
 
 		files, err := s.Scan(context.Background())
 		if err != nil {
-			t.Fatalf("Scan failed: %v", err)
+			t.Fatalf("scan failed: %v", err)
 		}
 
 		if len(files) != 2 {
-			t.Fatalf("Expected 2 unique files, got %d", len(files))
+			t.Fatalf("expected 2 unique files, got %d", len(files))
+		}
+	})
+
+	t.Run("ignores symbolic links", func(t *testing.T) {
+		for _, file := range files {
+			if filepath.Base(file.Path) == "link.jpg" {
+				t.Fatal("scanner followed symbolic link")
+			}
 		}
 	})
 }
