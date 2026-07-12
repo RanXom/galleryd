@@ -24,7 +24,8 @@ func New(roots []string) *Scanner {
 //
 // The returned slice is not guaranteed to be sorted.
 func (s *Scanner) Scan(ctx context.Context) ([]File, error) {
-	var files []File
+	files := make([]File, 0)
+	seen := make(map[string]struct{})
 
 	for _, root := range s.roots {
 		discovered, err := s.walk(ctx, root)
@@ -32,7 +33,14 @@ func (s *Scanner) Scan(ctx context.Context) ([]File, error) {
 			return nil, err
 		}
 
-		files = append(files, discovered...)
+		for _, file := range discovered {
+			if _, ok := seen[file.Path]; ok {
+				continue
+			}
+
+			seen[file.Path] = struct{}{}
+			files = append(files, file)
+		}
 	}
 
 	return files, nil

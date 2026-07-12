@@ -48,4 +48,22 @@ func TestScan(t *testing.T) {
 			}
 		}
 	})
+
+	t.Run("Deduplicates overlapping roots", func(t *testing.T) {
+		root := filepath.Join("testdata", "duplicate")
+
+		s := New([]string{
+			root,
+			root,
+		})
+
+		files, err := s.Scan(context.Background())
+		if err != nil {
+			t.Fatalf("Scan failed: %v", err)
+		}
+
+		if len(files) != 2 {
+			t.Fatalf("Expected 2 unique files, got %d", len(files))
+		}
+	})
 }
