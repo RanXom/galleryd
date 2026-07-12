@@ -43,10 +43,18 @@ func TestScanner(t *testing.T) {
 		}
 	})
 
-	t.Run("skip hidden directories", func(t *testing.T) {
+	t.Run("skips hidden directories", func(t *testing.T) {
 		for _, file := range files {
 			if filepath.Base(file.Path) == "nuclearlaunchcode.txt" {
 				t.Fatal("hidden file entered the scanner")
+			}
+		}
+	})
+
+	t.Run("skips hidden files", func(t *testing.T) {
+		for _, file := range files {
+			if filepath.Base(file.Path) == ".secret.jpg" {
+				t.Fatal("scanner returned hidden file")
 			}
 		}
 	})
