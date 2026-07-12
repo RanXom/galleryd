@@ -35,5 +35,12 @@ func (r *Reader) Read(ctx context.Context, file scanner.File) (Metadata, error) 
 		metadata.DateTaken = dateTaken
 	}
 
+	orientation, err := readOrientation(file.Path)
+	if err == nil {
+		metadata.Orientation = orientation
+	} else {
+		metadata.Orientation = 1
+	}
+
 	return metadata, nil
 }
