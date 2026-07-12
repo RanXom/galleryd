@@ -13,5 +13,19 @@ func New() *Reader {
 }
 
 func (r *Reader) Read(ctx context.Context, file scanner.File) (Metadata, error) {
-	return Metadata{}, nil
+	select {
+	case <-ctx.Done():
+		return Metadata{}, ctx.Err()
+	default:
+	}
+
+	width, height, err := readDimensions(file.Path)
+	if err != nil {
+		return Metadata{}, err
+	}
+
+	return Metadata{
+		Width:  width,
+		Height: height,
+	}, nil
 }
