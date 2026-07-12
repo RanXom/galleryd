@@ -20,6 +20,14 @@ func (s *Scanner) walk(ctx context.Context, root string) ([]File, error) {
 			return err
 		}
 
+		if d.Type()&fs.ModeSymlink != 0 {
+			if d.IsDir() {
+				return filepath.SkipDir
+			}
+
+			return nil
+		}
+
 		if d.IsDir() {
 			if shouldSkipDir(d.Name()) {
 				return filepath.SkipDir
