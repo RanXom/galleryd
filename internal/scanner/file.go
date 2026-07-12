@@ -5,8 +5,8 @@ import "time"
 // File represents a discovered file on disk.
 //
 // It contains only filesystem information.
-// Higher-level packages enrich it with metadata such as EXIF,
-// dimensions, IDs and thumbnails.
+// Metadata such as EXIF, thumbnails and IDs are added by higher
+// level packages.
 type File struct {
 	Path         string
 	Root         string

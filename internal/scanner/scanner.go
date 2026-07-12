@@ -5,10 +5,15 @@ import (
 	"path/filepath"
 )
 
+// Scanner discovers image files from one or more filesystem roots
+//
+// Scanner is safe for concurrent use after construction,
+// provided Scan is not called concurrently
 type Scanner struct {
 	config Config
 }
 
+// New creates a Scanner using the supplied configuration.
 func New(config Config) *Scanner {
 	clean := make([]string, len(config.Roots))
 	for i, root := range config.Roots {
@@ -21,9 +26,14 @@ func New(config Config) *Scanner {
 	}
 }
 
-// Scan walks every configured root and returns the discovered files.
+// Scan recursively walks every configured root and returns the
+// discovered image files.
 //
-// The returned slice is not guaranteed to be sorted.
+// Scan respects context cancellation.
+//
+// Returned files are deduplicated by absolute path.
+//
+// Results are not sorted.
 func (s *Scanner) Scan(ctx context.Context) ([]File, error) {
 	files := make([]File, 0)
 	seen := make(map[string]struct{})

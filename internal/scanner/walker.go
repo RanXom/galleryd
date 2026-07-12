@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 )
 
+// Intentionally unexported and scans exactly one root
 func (s *Scanner) walk(ctx context.Context, root string) ([]File, error) {
 	files := make([]File, 0)
 
@@ -36,6 +37,10 @@ func (s *Scanner) walk(ctx context.Context, root string) ([]File, error) {
 			return nil
 		}
 
+		// Ignore symbolic links.
+		//
+		// Following symlinks can lead to cycles, duplicate scans and
+		// traversal outside configured roots.
 		if shouldSkipFile(d.Name()) {
 			return nil
 		}

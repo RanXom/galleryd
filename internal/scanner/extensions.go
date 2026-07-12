@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+// supportedExtensions contains every image extension recognised
+// by the scanner.
 var supportedExtensions = map[string]struct{}{
 	".jpg":  {},
 	".jpeg": {},
