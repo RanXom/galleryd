@@ -25,8 +25,9 @@ func (r *Reader) Read(ctx context.Context, file scanner.File) (Metadata, error) 
 	}
 
 	metadata := Metadata{
-		Width:  width,
-		Height: height,
+		Width:     width,
+		Height:    height,
+		DateTaken: file.ModTime,
 	}
 
 	dateTaken, err := readDateTaken(file.Path)
