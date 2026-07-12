@@ -16,5 +16,16 @@ func New(roots []string) *Scanner {
 //
 // The returned slice is not guaranteed to be sorted.
 func (s *Scanner) Scan(ctx context.Context) ([]File, error) {
+	var files []File
+
+	for _, root := range s.roots {
+		discovered, err := s.walk(ctx, root)
+		if err != nil {
+			return nil, err
+		}
+
+		files = append(files, discovered...)
+	}
+
 	return nil, nil
 }
