@@ -24,6 +24,10 @@ func (s* Scanner) walk(ctx context.Context, root string) ([]File, error) {
 			return nil
 		}
 
+		if !isImage(path) {
+			return nil
+		}
+
 		info, err != nil {
 			return err
 		}
