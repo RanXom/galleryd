@@ -9,14 +9,14 @@ import (
 	"github.com/rwcarlsen/goexif/exif"
 )
 
-// readDateTaken extracts the DateTime EXIF tag from an image
+// readEXIF decodes the EXIF metadata from an image.
 //
-// Only the first 64 KiB of the file are read since EXIF metadata
-// is stored near the beginning of JPEG files.
-func readDateTaken(path string) (time.Time, error) {
+// Only the first 64 KiB are read since EXIF metadata is stored
+// near the beginning of JPEG files.
+func readEXIF(path string) (*exif.Exif, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		return time.Time{}, fmt.Errorf("open image: %w", err)
+		return nil, fmt.Errorf("open image: %w", err)
 	}
 	defer func() {
 		_ = file.Close()
@@ -26,46 +26,44 @@ func readDateTaken(path string) (time.Time, error) {
 
 	x, err := exif.Decode(reader)
 	if err != nil {
-		return time.Time{}, err
+		return nil, err
 	}
 
-	dateTaken, err := x.DateTime()
+	return x, nil
+}
+
+// readDateTaken extracts the DateTime EXIF tag from an image.
+//
+// Only the first 64 KiB of the file are read since EXIF metadata
+// is stored near the beginning of JPEG files.
+func readDateTaken(path string) (time.Time, error) {
+	x, err := readEXIF(path)
 	if err != nil {
 		return time.Time{}, err
 	}
 
-	return dateTaken, nil
+	return x.DateTime()
 }
 
 // readOrientation extracts the EXIF Orientation tag.
 //
 // If the image has no orientation tag, the default orientation (1)
-// is returned
+// is returned.
 func readOrientation(path string) (int, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return 1, fmt.Errorf("open image: %w", err)
-	}
-	defer func() {
-		_ = file.Close()
-	}()
-
-	reader := io.LimitReader(file, 64*1024)
-
-	x, err := exif.Decode(reader)
+	x, err := readEXIF(path)
 	if err != nil {
 		return 1, err
 	}
 
 	tag, err := x.Get(exif.Orientation)
 	if err != nil {
-		return 1, err
+		return 1, nil
 	}
 
-	orientaion, err := tag.Int(0)
+	orientation, err := tag.Int(0)
 	if err != nil {
 		return 1, err
 	}
 
-	return orientaion, nil
+	return orientation, nil
 }
