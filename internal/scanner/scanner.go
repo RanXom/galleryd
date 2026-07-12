@@ -6,17 +6,18 @@ import (
 )
 
 type Scanner struct {
-	roots []string
+	config Config
 }
 
-func New(roots []string) *Scanner {
-	clean := make([]string, len(roots))
-	for i, root := range roots {
+func New(config Config) *Scanner {
+	clean := make([]string, len(config.Roots))
+	for i, root := range config.Roots {
 		clean[i] = filepath.Clean(root)
 	}
 
+	config.Roots = clean
 	return &Scanner{
-		roots: clean,
+		config: config,
 	}
 }
 
@@ -27,7 +28,7 @@ func (s *Scanner) Scan(ctx context.Context) ([]File, error) {
 	files := make([]File, 0)
 	seen := make(map[string]struct{})
 
-	for _, root := range s.roots {
+	for _, root := range s.config.Roots {
 		discovered, err := s.walk(ctx, root)
 		if err != nil {
 			return nil, err
