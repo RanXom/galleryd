@@ -1,6 +1,9 @@
 package scanner
 
-import "context"
+import (
+	"context"
+	"path/filepath"
+)
 
 type Scanner struct {
 	roots []string
@@ -32,5 +35,5 @@ func (s *Scanner) Scan(ctx context.Context) ([]File, error) {
 		files = append(files, discovered...)
 	}
 
-	return nil, nil
+	return files, nil
 }

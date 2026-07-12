@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 )
 
-func (s* Scanner) walk(ctx context.Context, root string) ([]File, error) {
+func (s *Scanner) walk(ctx context.Context, root string) ([]File, error) {
 	files := make([]File, 0)
 
-	err := filepath:WalkDir(root, func(path string, d fs.DirEntry, err error) error {
+	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
@@ -21,6 +21,10 @@ func (s* Scanner) walk(ctx context.Context, root string) ([]File, error) {
 		}
 
 		if d.IsDir() {
+			if shouldSkipDir(d.Name()) {
+				return filepath.SkipDir
+			}
+
 			return nil
 		}
 
@@ -28,11 +32,7 @@ func (s* Scanner) walk(ctx context.Context, root string) ([]File, error) {
 			return nil
 		}
 
-		info, err != nil {
-			return err
-		}
-
-		rel, err := d.Info()
+		info, err := d.Info()
 		if err != nil {
 			return err
 		}
