@@ -7,8 +7,13 @@ type Scanner struct {
 }
 
 func New(roots []string) *Scanner {
+	clean := make([]string, len(roots))
+	for i, root := range roots {
+		clean[i] = filepath.Clean(root)
+	}
+
 	return &Scanner{
-		roots: roots,
+		roots: clean,
 	}
 }
 
