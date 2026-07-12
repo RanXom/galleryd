@@ -36,6 +36,10 @@ func (s *Scanner) walk(ctx context.Context, root string) ([]File, error) {
 			return nil
 		}
 
+		if shouldSkipFile(d.Name()) {
+			return nil
+		}
+
 		if !isImage(path) {
 			return nil
 		}
