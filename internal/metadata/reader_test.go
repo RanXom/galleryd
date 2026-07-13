@@ -2,11 +2,11 @@ package metadata
 
 import (
 	"context"
-	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/RanXom/galleryd/internal/scanner"
+	"github.com/RanXom/galleryd/internal/testfixtures"
 )
 
 func TestReader(t *testing.T) {
@@ -14,7 +14,7 @@ func TestReader(t *testing.T) {
 
 	t.Run("reads image dimensions", func(t *testing.T) {
 		file := scanner.File{
-			Path: filepath.Join("..", "testfixtures", "Canon_40D.jpg"),
+			Path: testfixtures.Canon40D(),
 		}
 
 		metadata, err := reader.Read(context.Background(), file)
@@ -29,7 +29,7 @@ func TestReader(t *testing.T) {
 
 	t.Run("reads EXIF timestamp", func(t *testing.T) {
 		file := scanner.File{
-			Path: filepath.Join("..", "testfixtures", "Canon_40D.jpg"),
+			Path: testfixtures.Canon40D(),
 		}
 
 		metadata, err := reader.Read(context.Background(), file)
@@ -57,7 +57,7 @@ func TestReader(t *testing.T) {
 		)
 
 		file := scanner.File{
-			Path:    filepath.Join("..", "testfixtures", "no-exif.png"),
+			Path:    testfixtures.NoEXIF(),
 			ModTime: modTime,
 		}
 
@@ -77,7 +77,7 @@ func TestReader(t *testing.T) {
 
 	t.Run("returns default orientation", func(t *testing.T) {
 		file := scanner.File{
-			Path: filepath.Join("..", "testfixtures", "no-exif.png"),
+			Path: testfixtures.NoEXIF(),
 		}
 
 		metadata, err := reader.Read(context.Background(), file)

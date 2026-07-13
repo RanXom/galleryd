@@ -2,12 +2,12 @@ package gallery
 
 import (
 	"context"
-	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/RanXom/galleryd/internal/metadata"
 	"github.com/RanXom/galleryd/internal/scanner"
+	"github.com/RanXom/galleryd/internal/testfixtures"
 )
 
 func TestBuilder(t *testing.T) {
@@ -17,7 +17,7 @@ func TestBuilder(t *testing.T) {
 	t.Run("builds gallery photos", func(t *testing.T) {
 		files := []scanner.File{
 			{
-				Path:         filepath.Join("..", "testfixtures", "Canon_40D.jpg"),
+				Path:         testfixtures.Canon40D(),
 				Root:         "testfixtures",
 				RelativePath: "Canon_40D.jpg",
 				ModTime:      time.Now(),
@@ -36,7 +36,7 @@ func TestBuilder(t *testing.T) {
 
 	t.Run("generates deterministic ids", func(t *testing.T) {
 		file := scanner.File{
-			Path:         filepath.Join("..", "testfixtures", "Canon_40D.jpg"),
+			Path:         testfixtures.Canon40D(),
 			Root:         "photos",
 			RelativePath: "Canon_40D.jpg",
 			ModTime:      time.Now(),
