@@ -4,21 +4,11 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/RanXom/galleryd/internal/service"
 )
 
-type photoResponse struct {
-	ID           string    `json:"id"`
-	DateTaken    time.Time `json:"dateTaken"`
-	Width        int       `json:"width"`
-	Height       int       `json:"height"`
-	ThumbnailURL string    `json:"thumbnail"`
-	PhotoURL     string    `json:"photo"`
-}
-
-func (s *Server) handlePhoto(
+func (s *Server) handleThumbnail(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
@@ -45,9 +35,24 @@ func (s *Server) handlePhoto(
 		return
 	}
 
+	thumb, err := s.thumbnails.Generate(
+		r.Context(),
+		photo,
+	)
+	if err != nil {
+		log.Printf("generate thumbnail: %v", err)
+
+		writeError(
+			w,
+			http.StatusInternalServerError,
+			"failed to generate thumbnail",
+		)
+		return
+	}
+
 	http.ServeFile(
 		w,
 		r,
-		photo.Path,
+		thumb.Path,
 	)
 }

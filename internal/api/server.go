@@ -13,5 +13,6 @@ type Server struct {
 	mux  *http.ServeMux
 	http *http.Server
 
-	gallery service.GalleryService
+	gallery    service.GalleryService
+	thumbnails ThumbnailGenerator
 }

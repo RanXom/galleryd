@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 
 	"github.com/RanXom/galleryd/internal/api"
@@ -12,6 +13,7 @@ import (
 	"github.com/RanXom/galleryd/internal/metadata"
 	"github.com/RanXom/galleryd/internal/scanner"
 	"github.com/RanXom/galleryd/internal/service"
+	"github.com/RanXom/galleryd/internal/thumbnail"
 )
 
 func main() {
@@ -24,7 +26,7 @@ func main() {
 
 	scanner := scanner.New(scanner.Config{
 		Roots: []string{
-			".",
+			filepath.Join(os.Getenv("HOME"), "Pictures"),
 		},
 	})
 
@@ -32,14 +34,23 @@ func main() {
 
 	builder := gallery.New(reader)
 
-	gallerySerice := service.New(
+	galleryService := service.New(
 		scanner,
 		builder,
 	)
+	if err := galleryService.Load(ctx); err != nil {
+		log.Fatal(err)
+	}
+
+	thumbnailGenerator, err := thumbnail.New(".cache/galleryd")
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	server := api.New(api.Config{
-		Address: ":8082",
-		Gallery: gallerySerice,
+		Address:    ":8082",
+		Gallery:    galleryService,
+		Thumbnails: thumbnailGenerator,
 	})
 
 	log.Println("galleryd listening on :8082")

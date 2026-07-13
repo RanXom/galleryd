@@ -9,4 +9,6 @@ import (
 type galleryService struct {
 	scanner *scanner.Scanner
 	builder *gallery.Builder
+
+	index galleryIndex
 }
