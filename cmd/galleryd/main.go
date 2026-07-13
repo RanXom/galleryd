@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"syscall"
 
 	"github.com/RanXom/galleryd/internal/api"
@@ -18,6 +17,12 @@ import (
 )
 
 func main() {
+	cacheDir := flag.String(
+		"cache-dir",
+		defaultCacheDir(),
+		"thumbnail cache directory",
+	)
+
 	addr := flag.String(
 		"addr",
 		":8082",
@@ -37,7 +42,7 @@ func main() {
 	if len(dirs) == 0 {
 		dirs = append(
 			dirs,
-			filepath.Join(os.Getenv("HOME"), "Pictures"),
+			defaultPicturesDir(),
 		)
 	}
 
@@ -64,7 +69,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	thumbnailGenerator, err := thumbnail.New(".cache/galleryd")
+	thumbnailGenerator, err := thumbnail.New(*cacheDir)
 	if err != nil {
 		log.Fatal(err)
 	}
