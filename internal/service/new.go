@@ -8,8 +8,8 @@ import (
 func NewGalleryService(
 	scanner *scanner.Scanner,
 	builder *gallery.Builder,
-) *GalleryService {
-	return &GalleryService{
+) GalleryService {
+	return &galleryService{
 		scanner: scanner,
 		builder: builder,
 	}

@@ -6,7 +6,7 @@ import (
 )
 
 // GalleryService builds gallery photos
-type GalleryService struct {
+type galleryService struct {
 	scanner *scanner.Scanner
 	builder *gallery.Builder
 }
