@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"syscall"
 
 	"github.com/RanXom/galleryd/internal/api"
@@ -17,6 +17,35 @@ import (
 )
 
 func main() {
+	cacheDir := flag.String(
+		"cache-dir",
+		defaultCacheDir(),
+		"thumbnail cache directory",
+	)
+
+	addr := flag.String(
+		"addr",
+		":8082",
+		"HTTP listen address (e.g. :8082, localhost:8082, 0.0.0.0:8082)",
+	)
+
+	var dirs stringSliceFlag
+
+	flag.Var(
+		&dirs,
+		"dir",
+		"gallery directory (may be specified multiple times)",
+	)
+
+	flag.Parse()
+
+	if len(dirs) == 0 {
+		dirs = append(
+			dirs,
+			defaultPicturesDir(),
+		)
+	}
+
 	ctx, stop := signal.NotifyContext(
 		context.Background(),
 		os.Interrupt,
@@ -25,9 +54,7 @@ func main() {
 	defer stop()
 
 	scanner := scanner.New(scanner.Config{
-		Roots: []string{
-			filepath.Join(os.Getenv("HOME"), "Pictures"),
-		},
+		Roots: dirs,
 	})
 
 	reader := metadata.New()
@@ -42,18 +69,18 @@ func main() {
 		log.Fatal(err)
 	}
 
-	thumbnailGenerator, err := thumbnail.New(".cache/galleryd")
+	thumbnailGenerator, err := thumbnail.New(*cacheDir)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	server := api.New(api.Config{
-		Address:    ":8082",
+		Address:    *addr,
 		Gallery:    galleryService,
 		Thumbnails: thumbnailGenerator,
 	})
 
-	log.Println("galleryd listening on :8082")
+	log.Printf("galleryd listening on %s", listenURL(*addr))
 
 	if err := server.Run(ctx); err != nil {
 		log.Fatal(err)
