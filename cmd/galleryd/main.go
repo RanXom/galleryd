@@ -24,7 +24,7 @@ func main() {
 
 	scanner := scanner.New(scanner.Config{
 		Roots: []string{
-			".",
+			"/home/ranxom/Pictures",
 		},
 	})
 

@@ -22,5 +22,10 @@ func New(config Config) *Server {
 		srv.handleHealth,
 	)
 
+	srv.mux.HandleFunc(
+		"GET /api/photos",
+		srv.handlePhotos,
+	)
+
 	return srv
 }
