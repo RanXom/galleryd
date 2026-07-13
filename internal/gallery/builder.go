@@ -7,7 +7,7 @@ import (
 	"github.com/RanXom/galleryd/internal/scanner"
 )
 
-// Builder constructs gallery photos
+// Builder constructs gallery photos from scanned files.
 type Builder struct {
 	reader *metadata.Reader
 }
@@ -18,6 +18,9 @@ func New(reader *metadata.Reader) *Builder {
 	}
 }
 
+// Build converts scanned files into gallery photos.
+//
+// Photos are sorted by capture date in descending order.
 func (b *Builder) Build(
 	ctx context.Context,
 	files []scanner.File,
