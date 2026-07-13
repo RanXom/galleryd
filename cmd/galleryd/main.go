@@ -12,6 +12,7 @@ import (
 	"github.com/RanXom/galleryd/internal/metadata"
 	"github.com/RanXom/galleryd/internal/scanner"
 	"github.com/RanXom/galleryd/internal/service"
+	"github.com/RanXom/galleryd/internal/thumbnail"
 )
 
 func main() {
@@ -36,14 +37,19 @@ func main() {
 		scanner,
 		builder,
 	)
-
 	if err := galleryService.Load(ctx); err != nil {
 		log.Fatal(err)
 	}
 
+	thumbnailGenerator, err := thumbnail.New(".cache/galleryd")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	server := api.New(api.Config{
-		Address: ":8082",
-		Gallery: galleryService,
+		Address:    ":8082",
+		Gallery:    galleryService,
+		Thumbnails: thumbnailGenerator,
 	})
 
 	log.Println("galleryd listening on :8082")

@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/RanXom/galleryd/internal/service"
+	"github.com/RanXom/galleryd/internal/thumbnail"
 )
 
 // Server exposes the gallery over HTTP
@@ -13,5 +14,6 @@ type Server struct {
 	mux  *http.ServeMux
 	http *http.Server
 
-	gallery service.GalleryService
+	gallery   service.GalleryService
+	thumbnail *thumbnail.Generator
 }

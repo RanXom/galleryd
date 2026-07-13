@@ -11,10 +11,13 @@ func New(config Config) *Server {
 	}
 
 	srv := &Server{
-		config:  config,
-		mux:     mux,
-		http:    server,
-		gallery: config.Gallery,
+		config: config,
+
+		mux:  mux,
+		http: server,
+
+		gallery:   config.Gallery,
+		thumbnail: config.Thumbnails,
 	}
 
 	srv.mux.HandleFunc(
