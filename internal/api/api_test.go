@@ -11,11 +11,30 @@ import (
 	"github.com/RanXom/galleryd/internal/gallery"
 	"github.com/RanXom/galleryd/internal/metadata"
 	"github.com/RanXom/galleryd/internal/service"
+	"github.com/RanXom/galleryd/internal/thumbnail"
 )
 
 type fakeGalleryService struct {
 	photos []gallery.Photo
 	err    error
+}
+
+type fakeThumbnailGenerator struct {
+	path string
+	err  error
+}
+
+func (f fakeThumbnailGenerator) Generate(
+	ctx context.Context,
+	photo gallery.Photo,
+) (thumbnail.Thumbnail, error) {
+	if f.err != nil {
+		return thumbnail.Thumbnail{}, f.err
+	}
+
+	return thumbnail.Thumbnail{
+		Path: f.path,
+	}, nil
 }
 
 func (f fakeGalleryService) Load(ctx context.Context) error {
@@ -119,6 +138,49 @@ func TestPhotos(t *testing.T) {
 		t.Fatalf(
 			"unexpected photo url: %q",
 			photo.PhotoURL,
+		)
+	}
+}
+
+func TestThumbnail(t *testing.T) {
+	srv := New(Config{
+		Address: ":0",
+
+		Gallery: fakeGalleryService{
+			photos: []gallery.Photo{
+				{
+					ID: "abc123",
+				},
+			},
+		},
+
+		Thumbnails: fakeThumbnailGenerator{
+			path: "../scanner/testdata/gallery/vac/image.webp",
+		},
+	})
+
+	req := httptest.NewRequest(
+		http.MethodGet,
+		"/thumb/abc123",
+		nil,
+	)
+
+	rec := httptest.NewRecorder()
+
+	srv.mux.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf(
+			"expected %d, got %d",
+			http.StatusOK,
+			rec.Code,
+		)
+	}
+
+	if got := rec.Header().Get("Content-Type"); got != "image/webp" {
+		t.Fatalf(
+			"expected image/webp, got %q",
+			got,
 		)
 	}
 }
