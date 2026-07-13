@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
 	"os"
 	"os/signal"
@@ -17,6 +18,10 @@ import (
 )
 
 func main() {
+	addr := flag.String("addr", ":8082", "HTTP listen address")
+
+	flag.Parse()
+
 	ctx, stop := signal.NotifyContext(
 		context.Background(),
 		os.Interrupt,
@@ -48,12 +53,12 @@ func main() {
 	}
 
 	server := api.New(api.Config{
-		Address:    ":8082",
+		Address:    *addr,
 		Gallery:    galleryService,
 		Thumbnails: thumbnailGenerator,
 	})
 
-	log.Println("galleryd listening on :8082")
+	log.Printf("galleryd listening on %s", *addr)
 
 	if err := server.Run(ctx); err != nil {
 		log.Fatal(err)
