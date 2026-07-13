@@ -37,7 +37,7 @@ func (b *Builder) Build(
 		}
 
 		photos = append(photos, Photo{
-			ID:       generateID(file.RelativePath),
+			ID:       generateID(file),
 			File:     file,
 			Metadata: md,
 		})
