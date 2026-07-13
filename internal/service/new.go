@@ -5,7 +5,7 @@ import (
 	"github.com/RanXom/galleryd/internal/scanner"
 )
 
-func NewGalleryService(
+func New(
 	scanner *scanner.Scanner,
 	builder *gallery.Builder,
 ) GalleryService {
