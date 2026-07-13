@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 
 	"github.com/RanXom/galleryd/internal/api"
@@ -25,7 +26,7 @@ func main() {
 
 	scanner := scanner.New(scanner.Config{
 		Roots: []string{
-			".",
+			filepath.Join(os.Getenv("HOME"), "Pictures"),
 		},
 	})
 
