@@ -18,9 +18,28 @@ import (
 )
 
 func main() {
-	addr := flag.String("addr", ":8082", "HTTP listen address")
+	addr := flag.String(
+		"addr",
+		":8082",
+		"HTTP listen address",
+	)
+
+	var dirs stringSliceFlag
+
+	flag.Var(
+		&dirs,
+		"dir",
+		"gallery directory (may be specified multiple times)",
+	)
 
 	flag.Parse()
+
+	if len(dirs) == 0 {
+		dirs = append(
+			dirs,
+			filepath.Join(os.Getenv("HOME"), "Pictures"),
+		)
+	}
 
 	ctx, stop := signal.NotifyContext(
 		context.Background(),
@@ -30,9 +49,7 @@ func main() {
 	defer stop()
 
 	scanner := scanner.New(scanner.Config{
-		Roots: []string{
-			filepath.Join(os.Getenv("HOME"), "Pictures"),
-		},
+		Roots: dirs,
 	})
 
 	reader := metadata.New()
