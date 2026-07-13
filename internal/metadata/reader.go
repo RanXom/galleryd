@@ -30,16 +30,17 @@ func (r *Reader) Read(ctx context.Context, file scanner.File) (Metadata, error) 
 		DateTaken: file.ModTime,
 	}
 
-	dateTaken, err := readDateTaken(file.Path)
-	if err == nil {
-		metadata.DateTaken = dateTaken
-	}
+	metadata.Orientation = 1
 
-	orientation, err := readOrientation(file.Path)
+	x, err := readEXIF(file.Path)
 	if err == nil {
-		metadata.Orientation = orientation
-	} else {
-		metadata.Orientation = 1
+		if dateTaken, err := dateTakenFromEXIF(x); err == nil {
+			metadata.DateTaken = dateTaken
+		}
+
+		if orientation, err := orientationFromEXIF(x); err == nil {
+			metadata.Orientation = orientation
+		}
 	}
 
 	return metadata, nil

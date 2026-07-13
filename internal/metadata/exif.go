@@ -32,29 +32,16 @@ func readEXIF(path string) (*exif.Exif, error) {
 	return x, nil
 }
 
-// readDateTaken extracts the DateTime EXIF tag from an image.
-//
-// Only the first 64 KiB of the file are read since EXIF metadata
-// is stored near the beginning of JPEG files.
-func readDateTaken(path string) (time.Time, error) {
-	x, err := readEXIF(path)
-	if err != nil {
-		return time.Time{}, err
-	}
-
+// dateTakenFromEXIF extracts the DateTime EXIF tag.
+func dateTakenFromEXIF(x *exif.Exif) (time.Time, error) {
 	return x.DateTime()
 }
 
-// readOrientation extracts the EXIF Orientation tag.
+// orientationFromEXIF extracts the EXIF Orientation tag.
 //
 // If the image has no orientation tag, the default orientation (1)
 // is returned.
-func readOrientation(path string) (int, error) {
-	x, err := readEXIF(path)
-	if err != nil {
-		return 1, err
-	}
-
+func orientationFromEXIF(x *exif.Exif) (int, error) {
 	tag, err := x.Get(exif.Orientation)
 	if err != nil {
 		return 1, nil
