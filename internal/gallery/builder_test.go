@@ -17,8 +17,8 @@ func TestBuilder(t *testing.T) {
 	t.Run("builds gallery photos", func(t *testing.T) {
 		files := []scanner.File{
 			{
-				Path:         filepath.Join("..", "metadata", "testdata", "Canon_40D.jpg"),
-				Root:         "testdata",
+				Path:         filepath.Join("..", "testfixtures", "Canon_40D.jpg"),
+				Root:         "testfixtures",
 				RelativePath: "Canon_40D.jpg",
 				ModTime:      time.Now(),
 			},
@@ -36,7 +36,7 @@ func TestBuilder(t *testing.T) {
 
 	t.Run("generates deterministic ids", func(t *testing.T) {
 		file := scanner.File{
-			Path:         filepath.Join("..", "metadata", "testdata", "Canon_40D.jpg"),
+			Path:         filepath.Join("..", "testfixtures", "Canon_40D.jpg"),
 			Root:         "photos",
 			RelativePath: "Canon_40D.jpg",
 			ModTime:      time.Now(),

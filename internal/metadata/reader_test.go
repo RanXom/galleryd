@@ -14,7 +14,7 @@ func TestReader(t *testing.T) {
 
 	t.Run("reads image dimensions", func(t *testing.T) {
 		file := scanner.File{
-			Path: filepath.Join("testdata", "Canon_40D.jpg"),
+			Path: filepath.Join("..", "testfixtures", "Canon_40D.jpg"),
 		}
 
 		metadata, err := reader.Read(context.Background(), file)
@@ -29,7 +29,7 @@ func TestReader(t *testing.T) {
 
 	t.Run("reads EXIF timestamp", func(t *testing.T) {
 		file := scanner.File{
-			Path: filepath.Join("testdata", "Canon_40D.jpg"),
+			Path: filepath.Join("..", "testfixtures", "Canon_40D.jpg"),
 		}
 
 		metadata, err := reader.Read(context.Background(), file)
@@ -57,7 +57,7 @@ func TestReader(t *testing.T) {
 		)
 
 		file := scanner.File{
-			Path:    filepath.Join("testdata", "no-exif.png"),
+			Path:    filepath.Join("..", "testfixtures", "no-exif.png"),
 			ModTime: modTime,
 		}
 
@@ -77,7 +77,7 @@ func TestReader(t *testing.T) {
 
 	t.Run("returns default orientation", func(t *testing.T) {
 		file := scanner.File{
-			Path: filepath.Join("testdata", "no-exif.png"),
+			Path: filepath.Join("..", "testfixtures", "no-exif.png"),
 		}
 
 		metadata, err := reader.Read(context.Background(), file)
