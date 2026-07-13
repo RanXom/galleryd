@@ -22,12 +22,18 @@ func (g *Generator) Generate(
 	ctx context.Context,
 	photo gallery.Photo,
 ) (Thumbnail, error) {
-	_, err := generateImage(photo)
+	path := g.cachePath(photo)
+
+	img, err := generateImage(photo)
 	if err != nil {
 		return Thumbnail{}, err
 	}
 
+	if err := saveImage(path, img); err != nil {
+		return Thumbnail{}, err
+	}
+
 	return Thumbnail{
-		Path: g.cachePath(photo),
+		Path: path,
 	}, nil
 }
