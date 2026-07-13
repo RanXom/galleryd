@@ -13,4 +13,7 @@ type GalleryService interface {
 
 	// Gallery returns the currently loaded gallery.
 	Gallery(ctx context.Context) ([]gallery.Photo, error)
+
+	// Photo returns a single photo by its ID.
+	Photo(ctx context.Context, id string) (gallery.Photo, error)
 }
