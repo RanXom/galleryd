@@ -43,5 +43,7 @@ func (b *Builder) Build(
 		})
 	}
 
+	sortPhotos(photos)
+
 	return photos, nil
 }
