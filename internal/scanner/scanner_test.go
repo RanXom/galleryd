@@ -20,9 +20,9 @@ func TestScanner(t *testing.T) {
 
 	t.Run("find supported images", func(t *testing.T) {
 		expected := map[string]struct{}{
-			"cat.jpg":    {},
-			"dog.png":    {},
-			"beach.webp": {},
+			"image.jpg":  {},
+			"image.png":  {},
+			"image.webp": {},
 		}
 
 		for _, file := range files {
@@ -45,7 +45,7 @@ func TestScanner(t *testing.T) {
 
 	t.Run("skips hidden directories", func(t *testing.T) {
 		for _, file := range files {
-			if filepath.Base(file.Path) == "nuclearlaunchcode.txt" {
+			if filepath.Base(file.Path) == ".hidden.jpg" {
 				t.Fatal("hidden file entered the scanner")
 			}
 		}
