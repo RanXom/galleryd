@@ -26,7 +26,7 @@ func main() {
 	addr := flag.String(
 		"addr",
 		":8082",
-		"HTTP listen address",
+		"HTTP listen address (e.g. :8082, localhost:8082, 0.0.0.0:8082)",
 	)
 
 	var dirs stringSliceFlag
@@ -80,7 +80,7 @@ func main() {
 		Thumbnails: thumbnailGenerator,
 	})
 
-	log.Printf("galleryd listening on %s", *addr)
+	log.Printf("galleryd listening on %s", listenURL(*addr))
 
 	if err := server.Run(ctx); err != nil {
 		log.Fatal(err)
