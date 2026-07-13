@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	thumbnailVersion   = "v1"
 	thumbnailExtension = ".webp"
 )
 
@@ -22,6 +23,7 @@ func (g *Generator) cachePath(photo gallery.Photo) string {
 	return filepath.Join(
 		g.cacheDir,
 		"thumbs",
+		thumbnailVersion,
 		shard,
 		filename,
 	)
