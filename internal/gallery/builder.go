@@ -22,5 +22,26 @@ func (b *Builder) Build(
 	ctx context.Context,
 	files []scanner.File,
 ) ([]Photo, error) {
-	return nil, nil
+	photos := make([]Photo, 0, len(files))
+
+	for _, file := range files {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
+		}
+
+		md, err := b.reader.Read(ctx, file)
+		if err != nil {
+			return nil, err
+		}
+
+		photos = append(photos, Photo{
+			ID:       generateID(file.RelativePath),
+			File:     file,
+			Metadata: md,
+		})
+	}
+
+	return photos, nil
 }
