@@ -32,14 +32,18 @@ func main() {
 
 	builder := gallery.New(reader)
 
-	gallerySerice := service.New(
+	galleryService := service.New(
 		scanner,
 		builder,
 	)
 
+	if err := galleryService.Load(ctx); err != nil {
+		log.Fatal(err)
+	}
+
 	server := api.New(api.Config{
 		Address: ":8082",
-		Gallery: gallerySerice,
+		Gallery: galleryService,
 	})
 
 	log.Println("galleryd listening on :8082")
