@@ -1,15 +1,20 @@
 package thumbnail
 
 import (
+	"fmt"
 	"path/filepath"
 
 	"github.com/RanXom/galleryd/internal/gallery"
 )
 
 const (
-	thumbnailVersion   = "v1"
-	thumbnailExtension = ".webp"
+	thumbnailCacheVersion = 1
+	thumbnailExtension    = ".webp"
 )
+
+func cacheVersion() string {
+	return fmt.Sprintf("v%d", thumbnailCacheVersion)
+}
 
 // cachePath returns the on-disk cache location for a photo thumbnail.
 //
@@ -23,7 +28,7 @@ func (g *Generator) cachePath(photo gallery.Photo) string {
 	return filepath.Join(
 		g.cacheDir,
 		"thumbs",
-		thumbnailVersion,
+		cacheVersion(),
 		shard,
 		filename,
 	)

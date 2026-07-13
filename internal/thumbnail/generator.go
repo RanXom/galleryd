@@ -11,10 +11,16 @@ type Generator struct {
 	cacheDir string
 }
 
-func New(cacheDir string) *Generator {
-	return &Generator{
+func New(cacheDir string) (*Generator, error) {
+	g := &Generator{
 		cacheDir: cacheDir,
 	}
+
+	if err := g.initializeCache(); err != nil {
+		return nil, err
+	}
+
+	return g, nil
 }
 
 // Generate creates (or retrieves) a thumbnail
