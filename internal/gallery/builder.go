@@ -24,6 +24,12 @@ func (b *Builder) Build(
 ) ([]Photo, error) {
 	photos := make([]Photo, 0, len(files))
 
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	default:
+	}
+
 	for _, file := range files {
 		select {
 		case <-ctx.Done():
