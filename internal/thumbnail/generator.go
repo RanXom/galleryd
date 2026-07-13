@@ -24,13 +24,20 @@ func (g *Generator) Generate(
 ) (Thumbnail, error) {
 	path := g.cachePath(photo)
 
-	img, err := generateImage(photo)
+	exists, err := thumbnailExists(path)
 	if err != nil {
 		return Thumbnail{}, err
 	}
 
-	if err := saveImage(path, img); err != nil {
-		return Thumbnail{}, err
+	if !exists {
+		img, err := generateImage(photo)
+		if err != nil {
+			return Thumbnail{}, err
+		}
+
+		if err := saveImage(path, img); err != nil {
+			return Thumbnail{}, err
+		}
 	}
 
 	return Thumbnail{
