@@ -35,7 +35,7 @@ func (g *Generator) initializeCache() error {
 
 		name := entry.Name()
 
-		if strings.HasPrefix(name, "v") {
+		if !strings.HasPrefix(name, "v") {
 			continue
 		}
 

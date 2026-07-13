@@ -28,6 +28,12 @@ func (g *Generator) Generate(
 	ctx context.Context,
 	photo gallery.Photo,
 ) (Thumbnail, error) {
+	select {
+	case <-ctx.Done():
+		return Thumbnail{}, ctx.Err()
+	default:
+	}
+
 	path := g.cachePath(photo)
 
 	exists, err := thumbnailExists(path)
