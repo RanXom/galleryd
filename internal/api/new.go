@@ -10,9 +10,16 @@ func New(config Config) *Server {
 		Handler: mux,
 	}
 
-	return &Server{
+	srv := &Server{
 		config: config,
 		mux:    mux,
 		http:   server,
 	}
+
+	srv.mux.HandleFunc(
+		"GET /health",
+		srv.handleHealth,
+	)
+
+	return srv
 }
