@@ -22,5 +22,7 @@ func (g *Generator) Generate(
 	ctx context.Context,
 	photo gallery.Photo,
 ) (Thumbnail, error) {
-	return Thumbnail{}, nil
+	return Thumbnail{
+		Path: g.cachePath(photo),
+	}, nil
 }
