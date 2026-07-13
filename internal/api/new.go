@@ -35,5 +35,10 @@ func New(config Config) *Server {
 		srv.handleThumbnail,
 	)
 
+	srv.mux.HandleFunc(
+		"GET /photo/{id}",
+		srv.handlePhoto,
+	)
+
 	return srv
 }
