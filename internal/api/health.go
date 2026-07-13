@@ -20,10 +20,6 @@ func (s *Server) handleHealth(
 	}
 
 	if err := json.NewEncoder(w).Encode(response); err != nil {
-		http.Error(
-			w,
-			http.StatusText(http.StatusInternalServerError),
-			http.StatusInternalServerError,
-		)
+		writeError(w, http.StatusInternalServerError, "failed to encode response")
 	}
 }

@@ -12,12 +12,12 @@ func (s *Server) handlePhotos(
 ) {
 	photos, err := s.gallery.Gallery(r.Context())
 	if err != nil {
-		log.Printf("gallery: %v", err)
+		log.Printf("build gallery: %v", err)
 
-		http.Error(
+		writeError(
 			w,
-			http.StatusText(http.StatusInternalServerError),
 			http.StatusInternalServerError,
+			"failed to build gallery",
 		)
 		return
 	}
@@ -38,10 +38,12 @@ func (s *Server) handlePhotos(
 	w.Header().Set("Content-Type", "application/json")
 
 	if err := json.NewEncoder(w).Encode(response); err != nil {
-		http.Error(
+		log.Printf("encode photos response: %v", err)
+
+		writeError(
 			w,
-			http.StatusText(http.StatusInternalServerError),
 			http.StatusInternalServerError,
+			"failed to encode response",
 		)
 	}
 }
