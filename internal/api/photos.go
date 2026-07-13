@@ -30,8 +30,8 @@ func (s *Server) handlePhotos(
 			DateTaken:    photo.DateTaken,
 			Width:        photo.Width,
 			Height:       photo.Height,
-			ThumbnailURL: "/thumb/" + photo.ID,
-			PhotoURL:     "/photo/" + photo.ID,
+			ThumbnailURL: thumbnailURL(photo.ID),
+			PhotoURL:     photoURL(photo.ID),
 		})
 	}
 
