@@ -16,8 +16,8 @@ func New(config Config) *Server {
 		mux:  mux,
 		http: server,
 
-		gallery:   config.Gallery,
-		thumbnail: config.Thumbnails,
+		gallery:    config.Gallery,
+		thumbnails: config.Thumbnails,
 	}
 
 	srv.mux.HandleFunc(
@@ -28,6 +28,11 @@ func New(config Config) *Server {
 	srv.mux.HandleFunc(
 		"GET /api/photos",
 		srv.handlePhotos,
+	)
+
+	srv.mux.HandleFunc(
+		"GET /thumb/{id}",
+		srv.handleThumbnail,
 	)
 
 	return srv
