@@ -12,6 +12,7 @@ func New(config Config) *Server {
 
 	return &Server{
 		config: config,
+		mux:    mux,
 		http:   server,
 	}
 }
