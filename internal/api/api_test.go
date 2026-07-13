@@ -1,27 +1,124 @@
 package api
 
 import (
+	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
+
+	"github.com/RanXom/galleryd/internal/gallery"
+	"github.com/RanXom/galleryd/internal/metadata"
+	"github.com/RanXom/galleryd/internal/service"
 )
 
-func TestHealth(t *testing.T) {
-	server := New(Config{
+type fakeGalleryService struct {
+	photos []gallery.Photo
+	err    error
+}
+
+func (f fakeGalleryService) Load(ctx context.Context) error {
+	return nil
+}
+
+func (f fakeGalleryService) Gallery(ctx context.Context) ([]gallery.Photo, error) {
+	return f.photos, f.err
+}
+
+func (f fakeGalleryService) Photo(
+	ctx context.Context,
+	id string,
+) (gallery.Photo, error) {
+	for _, photo := range f.photos {
+		if photo.ID == id {
+			return photo, nil
+		}
+	}
+
+	return gallery.Photo{}, service.ErrPhotoNotFound
+}
+
+func TestPhotos(t *testing.T) {
+	srv := New(Config{
 		Address: ":0",
+
+		Gallery: fakeGalleryService{
+			photos: []gallery.Photo{
+				{
+					ID: "abc123",
+
+					Metadata: metadata.Metadata{
+						Width:  100,
+						Height: 50,
+						DateTaken: time.Date(
+							2025,
+							1,
+							1,
+							12,
+							0,
+							0,
+							0,
+							time.UTC,
+						),
+					},
+				},
+			},
+		},
 	})
 
 	req := httptest.NewRequest(
 		http.MethodGet,
-		"/health",
+		"/api/photos",
 		nil,
 	)
 
 	rec := httptest.NewRecorder()
 
-	server.mux.ServeHTTP(rec, req)
+	srv.mux.ServeHTTP(rec, req)
 
 	if rec.Code != http.StatusOK {
-		t.Fatalf("expected 200, got %d", rec.Code)
+		t.Fatalf(
+			"expected %d, got %d",
+			http.StatusOK,
+			rec.Code,
+		)
+	}
+
+	var response []photoResponse
+
+	if err := json.NewDecoder(rec.Body).Decode(&response); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+
+	if len(response) != 1 {
+		t.Fatalf(
+			"expected 1 photo, got %d",
+			len(response),
+		)
+	}
+
+	photo := response[0]
+
+	if photo.ID != "abc123" {
+		t.Fatalf(
+			"expected id %q, got %q",
+			"abc123",
+			photo.ID,
+		)
+	}
+
+	if photo.ThumbnailURL != "/thumb/abc123" {
+		t.Fatalf(
+			"unexpected thumbnail url: %q",
+			photo.ThumbnailURL,
+		)
+	}
+
+	if photo.PhotoURL != "/photo/abc123" {
+		t.Fatalf(
+			"unexpected photo url: %q",
+			photo.PhotoURL,
+		)
 	}
 }
