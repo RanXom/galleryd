@@ -14,6 +14,7 @@ import (
 	"github.com/RanXom/galleryd/internal/scanner"
 	"github.com/RanXom/galleryd/internal/service"
 	"github.com/RanXom/galleryd/internal/thumbnail"
+	"github.com/RanXom/galleryd/internal/watcher"
 )
 
 func main() {
@@ -69,10 +70,20 @@ func main() {
 		log.Fatal(err)
 	}
 
+	fswatcher := watcher.New(watcher.Config{
+		Roots: dirs,
+	})
+
 	thumbnailGenerator, err := thumbnail.New(*cacheDir)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	go func() {
+		if err := fswatcher.Run(ctx); err != nil {
+			log.Printf("watcher: %v", err)
+		}
+	}()
 
 	server := api.New(api.Config{
 		Address:    *addr,
