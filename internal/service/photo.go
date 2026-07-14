@@ -14,6 +14,9 @@ func (s *galleryService) Photo(
 	ctx context.Context,
 	id string,
 ) (gallery.Photo, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
 	select {
 	case <-ctx.Done():
 		return gallery.Photo{}, ctx.Err()
