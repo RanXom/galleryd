@@ -37,7 +37,7 @@ func (f fakeThumbnailGenerator) Generate(
 	}, nil
 }
 
-func (f fakeGalleryService) Load(ctx context.Context) error {
+func (f fakeGalleryService) Reload(ctx context.Context) error {
 	return nil
 }
 

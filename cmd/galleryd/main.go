@@ -65,7 +65,7 @@ func main() {
 		scanner,
 		builder,
 	)
-	if err := galleryService.Load(ctx); err != nil {
+	if err := galleryService.Reload(ctx); err != nil {
 		log.Fatal(err)
 	}
 

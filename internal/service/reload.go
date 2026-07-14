@@ -7,7 +7,7 @@ import (
 )
 
 // Load scans the configured roots and rebuilds the in-memory gallery.
-func (s *galleryService) Load(ctx context.Context) error {
+func (s *galleryService) Reload(ctx context.Context) error {
 	files, err := s.scanner.Scan(ctx)
 	if err != nil {
 		return err
