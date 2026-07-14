@@ -3,9 +3,8 @@ package watcher
 import (
 	"context"
 	"fmt"
-	"io/fs"
 	"log"
-	"path/filepath"
+	"os"
 
 	"github.com/fsnotify/fsnotify"
 )
@@ -24,17 +23,7 @@ func (w *Watcher) Run(ctx context.Context) error {
 	}()
 
 	for _, root := range w.config.Roots {
-		if err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
-			if err != nil {
-				return err
-			}
-
-			if !d.IsDir() {
-				return nil
-			}
-
-			return fswatcher.Add(path)
-		}); err != nil {
+		if err := watchTree(fswatcher, root); err != nil {
 			return err
 		}
 	}
@@ -50,6 +39,23 @@ func (w *Watcher) Run(ctx context.Context) error {
 			}
 
 			log.Printf("watcher: %v %s", event.Op, event.Name)
+
+			if !event.Has(fsnotify.Create) {
+				continue
+			}
+
+			info, err := os.Stat(event.Name)
+			if err != nil {
+				continue
+			}
+
+			if !info.IsDir() {
+				continue
+			}
+
+			if err := watchTree(fswatcher, event.Name); err != nil {
+				log.Printf("watch new directory: %v", err)
+			}
 
 		case err, ok := <-fswatcher.Errors:
 			if !ok {
