@@ -7,7 +7,7 @@ import (
 	"github.com/RanXom/galleryd/internal/scanner"
 )
 
-// GalleryService builds gallery photos
+// galleryService implements GalleryService.
 type galleryService struct {
 	scanner *scanner.Scanner
 	builder *gallery.Builder
