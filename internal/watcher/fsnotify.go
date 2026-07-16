@@ -22,6 +22,8 @@ func (w *Watcher) Run(ctx context.Context) error {
 		_ = fswatcher.Close()
 	}()
 
+	go w.debounceLoop(ctx)
+
 	for _, root := range w.config.Roots {
 		if err := watchTree(fswatcher, root); err != nil {
 			return err
@@ -39,6 +41,8 @@ func (w *Watcher) Run(ctx context.Context) error {
 			}
 
 			log.Printf("watcher: %v %s", event.Op, event.Name)
+
+			w.notify()
 
 			if !event.Has(fsnotify.Create) {
 				continue
