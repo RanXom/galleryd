@@ -122,4 +122,21 @@ func TestQueryPhotos(t *testing.T) {
 			"5", "6", "7", "8", "9",
 		)
 	})
+
+	t.Run("ignores sorting for now", func(t *testing.T) {
+		got := QueryPhotos(
+			photos,
+			Query{
+				Sort:  SortByPath,
+				Order: SortAsc,
+			},
+		)
+
+		assertIDs(
+			t,
+			got,
+			"0", "1", "2", "3", "4",
+			"5", "6", "7", "8", "9",
+		)
+	})
 }
