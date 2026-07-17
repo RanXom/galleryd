@@ -44,5 +44,23 @@ func parseQuery(r *http.Request) (gallery.Query, error) {
 		query.Offset = n
 	}
 
+	if sort := values.Get("sort"); sort != "" {
+		switch gallery.SortField(sort) {
+		case gallery.SortByDateTime, gallery.SortByPath:
+			query.Sort = gallery.SortField(sort)
+		default:
+			return gallery.Query{}, errors.New("invalid sort field")
+		}
+	}
+
+	if order := values.Get("order"); order != "" {
+		switch gallery.SortOrder(order) {
+		case gallery.SortAsc, gallery.SortDesc:
+			query.Order = gallery.SortOrder(order)
+		default:
+			return gallery.Query{}, errors.New("invalid sort order")
+		}
+	}
+
 	return query, nil
 }
