@@ -4,17 +4,26 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-
-	"github.com/RanXom/galleryd/internal/gallery"
 )
 
 func (s *Server) handlePhotos(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
+	query, err := parseQuery(r)
+	if err != nil {
+		writeError(
+			w,
+			http.StatusBadRequest,
+			"invalid query parameters",
+		)
+
+		return
+	}
+
 	photos, err := s.gallery.Gallery(
 		r.Context(),
-		gallery.Query{},
+		query,
 	)
 	if err != nil {
 		log.Printf("build gallery: %v", err)
