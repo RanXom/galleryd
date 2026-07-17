@@ -24,5 +24,8 @@ func (s *galleryService) Gallery(ctx context.Context, query gallery.Query) ([]ga
 		return nil, errors.New("gallery not loaded")
 	}
 
-	return s.index.photos, nil
+	return gallery.QueryPhotos(
+		s.index.photos,
+		query,
+	), nil
 }
