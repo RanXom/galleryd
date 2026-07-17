@@ -45,7 +45,11 @@ func (f *fakeGalleryService) Reload(ctx context.Context) error {
 	return f.reloadErr
 }
 
-func (f fakeGalleryService) Gallery(ctx context.Context) ([]gallery.Photo, error) {
+func (f fakeGalleryService) Gallery(
+	ctx context.Context,
+	query gallery.Query,
+) ([]gallery.Photo, error) {
+	_ = query
 	return f.photos, f.err
 }
 

@@ -29,7 +29,7 @@ func TestReloadInitialLoad(t *testing.T) {
 		t.Fatalf("reload gallery: %v", err)
 	}
 
-	photos, err := service.Gallery(ctx)
+	photos, err := service.Gallery(ctx, gallery.Query{})
 	if err != nil {
 		t.Fatalf("gallery: %v", err)
 	}
@@ -85,7 +85,7 @@ func TestReloadReplacesGallery(t *testing.T) {
 		t.Fatalf("first reload: %v", err)
 	}
 
-	before, err := service.Gallery(ctx)
+	before, err := service.Gallery(ctx, gallery.Query{})
 	if err != nil {
 		t.Fatalf("gallery: %v", err)
 	}
@@ -106,7 +106,7 @@ func TestReloadReplacesGallery(t *testing.T) {
 		t.Fatalf("second reload: %v", err)
 	}
 
-	after, err := service.Gallery(ctx)
+	after, err := service.Gallery(ctx, gallery.Query{})
 	if err != nil {
 		t.Fatalf("gallery: %v", err)
 	}

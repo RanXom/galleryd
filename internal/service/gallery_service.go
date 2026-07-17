@@ -8,7 +8,9 @@ import (
 )
 
 // Gallery scans the configured roots and builds the gallery.
-func (s *galleryService) Gallery(ctx context.Context) ([]gallery.Photo, error) {
+func (s *galleryService) Gallery(ctx context.Context, query gallery.Query) ([]gallery.Photo, error) {
+	_ = query
+
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
