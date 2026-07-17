@@ -40,5 +40,10 @@ func New(config Config) *Server {
 		srv.handlePhoto,
 	)
 
+	srv.mux.HandleFunc(
+		"POST /api/reload",
+		srv.handleReload,
+	)
+
 	return srv
 }

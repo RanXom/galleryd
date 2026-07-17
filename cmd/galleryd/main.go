@@ -14,6 +14,7 @@ import (
 	"github.com/RanXom/galleryd/internal/scanner"
 	"github.com/RanXom/galleryd/internal/service"
 	"github.com/RanXom/galleryd/internal/thumbnail"
+	"github.com/RanXom/galleryd/internal/watcher"
 )
 
 func main() {
@@ -65,14 +66,30 @@ func main() {
 		scanner,
 		builder,
 	)
-	if err := galleryService.Load(ctx); err != nil {
+	if err := galleryService.Reload(ctx); err != nil {
 		log.Fatal(err)
 	}
+
+	fswatcher := watcher.New(watcher.Config{
+		Roots: dirs,
+		OnChange: func() {
+			if err := galleryService.Reload(context.Background()); err != nil {
+				log.Printf("reload gallery: %v", err)
+				return
+			}
+		},
+	})
 
 	thumbnailGenerator, err := thumbnail.New(*cacheDir)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	go func() {
+		if err := fswatcher.Run(ctx); err != nil {
+			log.Printf("watcher: %v", err)
+		}
+	}()
 
 	server := api.New(api.Config{
 		Address:    *addr,

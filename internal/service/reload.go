@@ -6,8 +6,8 @@ import (
 	"github.com/RanXom/galleryd/internal/gallery"
 )
 
-// Load scans the configured roots and rebuilds the in-memory gallery.
-func (s *galleryService) Load(ctx context.Context) error {
+// Reload scans the configured roots and rebuilds the in-memory gallery.
+func (s *galleryService) Reload(ctx context.Context) error {
 	files, err := s.scanner.Scan(ctx)
 	if err != nil {
 		return err
@@ -27,7 +27,9 @@ func (s *galleryService) Load(ctx context.Context) error {
 		index.byID[photo.ID] = photo
 	}
 
+	s.mu.Lock()
 	s.index = index
+	s.mu.Unlock()
 
 	return nil
 }

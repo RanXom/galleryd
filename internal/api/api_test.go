@@ -17,6 +17,9 @@ import (
 type fakeGalleryService struct {
 	photos []gallery.Photo
 	err    error
+
+	reloadCalls int
+	reloadErr   error
 }
 
 type fakeThumbnailGenerator struct {
@@ -37,8 +40,9 @@ func (f fakeThumbnailGenerator) Generate(
 	}, nil
 }
 
-func (f fakeGalleryService) Load(ctx context.Context) error {
-	return nil
+func (f *fakeGalleryService) Reload(ctx context.Context) error {
+	f.reloadCalls++
+	return f.reloadErr
 }
 
 func (f fakeGalleryService) Gallery(ctx context.Context) ([]gallery.Photo, error) {
@@ -62,7 +66,7 @@ func TestPhotos(t *testing.T) {
 	srv := New(Config{
 		Address: ":0",
 
-		Gallery: fakeGalleryService{
+		Gallery: &fakeGalleryService{
 			photos: []gallery.Photo{
 				{
 					ID: "abc123",
@@ -146,7 +150,7 @@ func TestThumbnail(t *testing.T) {
 	srv := New(Config{
 		Address: ":0",
 
-		Gallery: fakeGalleryService{
+		Gallery: &fakeGalleryService{
 			photos: []gallery.Photo{
 				{
 					ID: "abc123",
@@ -181,6 +185,40 @@ func TestThumbnail(t *testing.T) {
 		t.Fatalf(
 			"expected image/webp, got %q",
 			got,
+		)
+	}
+}
+
+func TestReload(t *testing.T) {
+	gallery := &fakeGalleryService{}
+
+	srv := New(Config{
+		Address: ":0",
+		Gallery: gallery,
+	})
+
+	req := httptest.NewRequest(
+		http.MethodPost,
+		"/api/reload",
+		nil,
+	)
+
+	rec := httptest.NewRecorder()
+
+	srv.mux.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusNoContent {
+		t.Fatalf(
+			"expected %d, got %d",
+			http.StatusNoContent,
+			rec.Code,
+		)
+	}
+
+	if gallery.reloadCalls != 1 {
+		t.Fatalf(
+			"expected Reload() to be called once, got %d",
+			gallery.reloadCalls,
 		)
 	}
 }

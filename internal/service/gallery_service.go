@@ -9,6 +9,9 @@ import (
 
 // Gallery scans the configured roots and builds the gallery.
 func (s *galleryService) Gallery(ctx context.Context) ([]gallery.Photo, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()
