@@ -49,8 +49,10 @@ func (f fakeGalleryService) Gallery(
 	ctx context.Context,
 	query gallery.Query,
 ) ([]gallery.Photo, error) {
-	_ = query
-	return f.photos, f.err
+	return gallery.QueryPhotos(
+		f.photos,
+		query,
+	), f.err
 }
 
 func (f fakeGalleryService) Photo(
@@ -223,6 +225,59 @@ func TestReload(t *testing.T) {
 		t.Fatalf(
 			"expected Reload() to be called once, got %d",
 			gallery.reloadCalls,
+		)
+	}
+}
+
+func TestPhotosPagination(t *testing.T) {
+	srv := New(Config{
+		Address: ":0",
+
+		Gallery: &fakeGalleryService{
+			photos: []gallery.Photo{
+				{ID: "0"},
+				{ID: "1"},
+				{ID: "2"},
+			},
+		},
+	})
+
+	req := httptest.NewRequest(
+		http.MethodGet,
+		"/api/photos?limit=1&offset=1",
+		nil,
+	)
+
+	rec := httptest.NewRecorder()
+
+	srv.mux.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf(
+			"expected %d, got %d",
+			http.StatusOK,
+			rec.Code,
+		)
+	}
+
+	var response []photoResponse
+
+	if err := json.NewDecoder(rec.Body).Decode(&response); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+
+	if len(response) != 1 {
+		t.Fatalf(
+			"expected 1 photo, got %d",
+			len(response),
+		)
+	}
+
+	if response[0].ID != "1" {
+		t.Fatalf(
+			"expected id %q, got %q",
+			"1",
+			response[0].ID,
 		)
 	}
 }
