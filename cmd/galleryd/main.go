@@ -73,9 +73,14 @@ func main() {
 	fswatcher := watcher.New(watcher.Config{
 		Roots: dirs,
 		OnChange: func() {
+			log.Println("watcher: reloading gallery")
+
 			if err := galleryService.Reload(context.Background()); err != nil {
 				log.Printf("reload gallery: %v", err)
+				return
 			}
+
+			log.Println("watcher: gallery reloaded")
 		},
 	})
 
