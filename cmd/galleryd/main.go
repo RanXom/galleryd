@@ -72,6 +72,11 @@ func main() {
 
 	fswatcher := watcher.New(watcher.Config{
 		Roots: dirs,
+		OnChange: func() {
+			if err := galleryService.Reload(context.Background()); err != nil {
+				log.Printf("reload gallery: %v", err)
+			}
+		},
 	})
 
 	thumbnailGenerator, err := thumbnail.New(*cacheDir)

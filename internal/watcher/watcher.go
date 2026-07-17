@@ -15,6 +15,6 @@ func New(config Config) *Watcher {
 
 	return &Watcher{
 		config:   config,
-		debounce: make(chan struct{}),
+		debounce: make(chan struct{}, 1),
 	}
 }
