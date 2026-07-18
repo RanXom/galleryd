@@ -4,6 +4,12 @@ func QueryPhotos(
 	photos []Photo,
 	query Query,
 ) []Photo {
+	if query.Sort != "" {
+		photos = append([]Photo(nil), photos...)
+
+		sortQueryPhotos(photos, query)
+	}
+
 	if query.Offset >= len(photos) {
 		return []Photo{}
 	}

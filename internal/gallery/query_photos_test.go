@@ -3,6 +3,8 @@ package gallery
 import (
 	"strconv"
 	"testing"
+
+	"github.com/RanXom/galleryd/internal/scanner"
 )
 
 func makePhotos(n int) []Photo {
@@ -139,4 +141,50 @@ func TestQueryPhotos(t *testing.T) {
 			"5", "6", "7", "8", "9",
 		)
 	})
+}
+
+func TestQueryPhotosSortByPathAscending(t *testing.T) {
+	photos := []Photo{
+		{ID: "1", File: scanner.File{RelativePath: "c.jpg"}},
+		{ID: "2", File: scanner.File{RelativePath: "a.jpg"}},
+		{ID: "3", File: scanner.File{RelativePath: "b.jpg"}},
+	}
+
+	got := QueryPhotos(photos, Query{
+		Sort:  SortByPath,
+		Order: SortAsc,
+	})
+
+	assertIDs(t, got, "2", "3", "1")
+}
+
+func TestQueryPhotosSortByPathDescending(t *testing.T) {
+	photos := []Photo{
+		{ID: "1", File: scanner.File{RelativePath: "a.jpg"}},
+		{ID: "2", File: scanner.File{RelativePath: "b.jpg"}},
+		{ID: "3", File: scanner.File{RelativePath: "c.jpg"}},
+	}
+
+	got := QueryPhotos(photos, Query{
+		Sort:  SortByPath,
+		Order: SortDesc,
+	})
+
+	assertIDs(t, got, "3", "2", "1")
+}
+
+func TestQueryPhotosSortThenPaginate(t *testing.T) {
+	photos := []Photo{
+		{ID: "1", File: scanner.File{RelativePath: "c.jpg"}},
+		{ID: "2", File: scanner.File{RelativePath: "a.jpg"}},
+		{ID: "3", File: scanner.File{RelativePath: "b.jpg"}},
+	}
+
+	got := QueryPhotos(photos, Query{
+		Sort:  SortByPath,
+		Order: SortAsc,
+		Limit: 1,
+	})
+
+	assertIDs(t, got, "2")
 }
