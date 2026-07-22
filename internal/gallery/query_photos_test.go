@@ -214,7 +214,7 @@ func TestQueryPhotosSortByDateAscending(t *testing.T) {
 	}
 
 	got := QueryPhotos(photos, Query{
-		Sort:  SortByDateTime,
+		Sort:  SortByDateTaken,
 		Order: SortAsc,
 	})
 
@@ -244,7 +244,7 @@ func TestQueryPhotosSortByDateDescending(t *testing.T) {
 	}
 
 	got := QueryPhotos(photos, Query{
-		Sort:  SortByDateTime,
+		Sort:  SortByDateTaken,
 		Order: SortDesc,
 	})
 

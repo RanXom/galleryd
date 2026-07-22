@@ -46,7 +46,7 @@ func parseQuery(r *http.Request) (gallery.Query, error) {
 
 	if sort := values.Get("sort"); sort != "" {
 		switch gallery.SortField(sort) {
-		case gallery.SortByDateTime, gallery.SortByPath:
+		case gallery.SortByDateTaken, gallery.SortByPath:
 			query.Sort = gallery.SortField(sort)
 		default:
 			return gallery.Query{}, errors.New("invalid sort field")

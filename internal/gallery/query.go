@@ -3,8 +3,8 @@ package gallery
 type SortField string
 
 const (
-	SortByDateTime SortField = "dateTaken"
-	SortByPath     SortField = "path"
+	SortByDateTaken SortField = "dateTaken"
+	SortByPath      SortField = "path"
 )
 
 // SortOrder identifies the sort direction

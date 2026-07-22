@@ -18,7 +18,7 @@ func sortQueryPhotos(
 			}
 
 			return photos[i].RelativePath < photos[j].RelativePath
-		case SortByDateTime:
+		case SortByDateTaken:
 			if query.Order == SortAsc {
 				if !photos[i].DateTaken.Equal(photos[j].DateTaken) {
 					return photos[i].DateTaken.Before(photos[j].DateTaken)
