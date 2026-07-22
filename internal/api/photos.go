@@ -10,7 +10,21 @@ func (s *Server) handlePhotos(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
-	photos, err := s.gallery.Gallery(r.Context())
+	query, err := parseQuery(r)
+	if err != nil {
+		writeError(
+			w,
+			http.StatusBadRequest,
+			"invalid query parameters",
+		)
+
+		return
+	}
+
+	photos, err := s.gallery.Gallery(
+		r.Context(),
+		query,
+	)
 	if err != nil {
 		log.Printf("build gallery: %v", err)
 

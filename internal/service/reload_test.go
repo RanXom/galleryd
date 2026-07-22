@@ -29,7 +29,7 @@ func TestReloadInitialLoad(t *testing.T) {
 		t.Fatalf("reload gallery: %v", err)
 	}
 
-	photos, err := service.Gallery(ctx)
+	photos, err := service.Gallery(ctx, gallery.Query{})
 	if err != nil {
 		t.Fatalf("gallery: %v", err)
 	}
@@ -85,7 +85,7 @@ func TestReloadReplacesGallery(t *testing.T) {
 		t.Fatalf("first reload: %v", err)
 	}
 
-	before, err := service.Gallery(ctx)
+	before, err := service.Gallery(ctx, gallery.Query{})
 	if err != nil {
 		t.Fatalf("gallery: %v", err)
 	}
@@ -106,7 +106,7 @@ func TestReloadReplacesGallery(t *testing.T) {
 		t.Fatalf("second reload: %v", err)
 	}
 
-	after, err := service.Gallery(ctx)
+	after, err := service.Gallery(ctx, gallery.Query{})
 	if err != nil {
 		t.Fatalf("gallery: %v", err)
 	}
@@ -121,5 +121,63 @@ func TestReloadReplacesGallery(t *testing.T) {
 
 	if _, err := service.Photo(ctx, oldID); err != ErrPhotoNotFound {
 		t.Fatalf("expected ErrPhotoNotFound, got %v", err)
+	}
+}
+
+func TestGalleryAppliesQuery(t *testing.T) {
+	ctx := context.Background()
+
+	root := t.TempDir()
+
+	copyFile := func(src, dst string) {
+		t.Helper()
+
+		data, err := os.ReadFile(src)
+		if err != nil {
+			t.Fatalf("read fixture: %v", err)
+		}
+
+		if err := os.WriteFile(dst, data, 0o644); err != nil {
+			t.Fatalf("write fixture: %v", err)
+		}
+	}
+
+	copyFile(
+		testfixtures.Canon40D(),
+		filepath.Join(root, "1.jpg"),
+	)
+
+	copyFile(
+		testfixtures.NikonD70(),
+		filepath.Join(root, "2.jpg"),
+	)
+
+	sc := scanner.New(scanner.Config{
+		Roots: []string{root},
+	})
+
+	builder := gallery.New(metadata.New())
+
+	service := New(sc, builder)
+
+	if err := service.Reload(ctx); err != nil {
+		t.Fatalf("reload gallery: %v", err)
+	}
+
+	photos, err := service.Gallery(
+		ctx,
+		gallery.Query{
+			Limit: 1,
+		},
+	)
+	if err != nil {
+		t.Fatalf("gallery: %v", err)
+	}
+
+	if len(photos) != 1 {
+		t.Fatalf(
+			"expected 1 photo, got %d",
+			len(photos),
+		)
 	}
 }

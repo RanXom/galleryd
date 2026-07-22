@@ -8,7 +8,9 @@ import (
 )
 
 // Gallery scans the configured roots and builds the gallery.
-func (s *galleryService) Gallery(ctx context.Context) ([]gallery.Photo, error) {
+func (s *galleryService) Gallery(ctx context.Context, query gallery.Query) ([]gallery.Photo, error) {
+	_ = query
+
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -22,5 +24,8 @@ func (s *galleryService) Gallery(ctx context.Context) ([]gallery.Photo, error) {
 		return nil, errors.New("gallery not loaded")
 	}
 
-	return s.index.photos, nil
+	return gallery.QueryPhotos(
+		s.index.photos,
+		query,
+	), nil
 }
