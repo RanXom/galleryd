@@ -250,3 +250,13 @@ func TestQueryPhotosSortByDateDescending(t *testing.T) {
 
 	assertIDs(t, got, "new", "mid", "old")
 }
+
+func TestQueryPhotosIgnoresExtensionFilteringForNow(t *testing.T) {
+	photos := makePhotos(3)
+
+	got := QueryPhotos(photos, Query{
+		Extension: "jpg",
+	})
+
+	assertIDs(t, got, "0", "1", "2")
+}

@@ -24,4 +24,6 @@ type Query struct {
 
 	Sort  SortField
 	Order SortOrder
+
+	Extension string
 }
