@@ -3,7 +3,9 @@ package gallery
 import (
 	"strconv"
 	"testing"
+	"time"
 
+	"github.com/RanXom/galleryd/internal/metadata"
 	"github.com/RanXom/galleryd/internal/scanner"
 )
 
@@ -187,4 +189,64 @@ func TestQueryPhotosSortThenPaginate(t *testing.T) {
 	})
 
 	assertIDs(t, got, "2")
+}
+
+func TestQueryPhotosSortByDateAscending(t *testing.T) {
+	photos := []Photo{
+		{
+			ID: "new",
+			Metadata: metadata.Metadata{
+				DateTaken: time.Date(2025, 1, 3, 0, 0, 0, 0, time.UTC),
+			},
+		},
+		{
+			ID: "old",
+			Metadata: metadata.Metadata{
+				DateTaken: time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
+			},
+		},
+		{
+			ID: "mid",
+			Metadata: metadata.Metadata{
+				DateTaken: time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC),
+			},
+		},
+	}
+
+	got := QueryPhotos(photos, Query{
+		Sort:  SortByDateTime,
+		Order: SortAsc,
+	})
+
+	assertIDs(t, got, "old", "mid", "new")
+}
+
+func TestQueryPhotosSortByDateDescending(t *testing.T) {
+	photos := []Photo{
+		{
+			ID: "old",
+			Metadata: metadata.Metadata{
+				DateTaken: time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
+			},
+		},
+		{
+			ID: "mid",
+			Metadata: metadata.Metadata{
+				DateTaken: time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC),
+			},
+		},
+		{
+			ID: "new",
+			Metadata: metadata.Metadata{
+				DateTaken: time.Date(2025, 1, 3, 0, 0, 0, 0, time.UTC),
+			},
+		},
+	}
+
+	got := QueryPhotos(photos, Query{
+		Sort:  SortByDateTime,
+		Order: SortDesc,
+	})
+
+	assertIDs(t, got, "new", "mid", "old")
 }
