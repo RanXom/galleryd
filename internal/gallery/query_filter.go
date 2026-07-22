@@ -18,7 +18,10 @@ func filterQueryPhotos(
 	for _, photo := range photos {
 		ext := strings.TrimPrefix(filepath.Ext(photo.RelativePath), ".")
 
-		if strings.EqualFold(ext, query.Extension) {
+		if strings.EqualFold(
+			strings.TrimPrefix(ext, "."),
+			strings.TrimPrefix(query.Extension, "."),
+		) {
 			filtered = append(filtered, photo)
 		}
 	}
