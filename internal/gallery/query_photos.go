@@ -4,6 +4,8 @@ func QueryPhotos(
 	photos []Photo,
 	query Query,
 ) []Photo {
+	photos = filterQueryPhotos(photos, query)
+
 	if query.Sort != "" {
 		photos = append([]Photo(nil), photos...)
 

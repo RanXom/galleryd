@@ -251,12 +251,63 @@ func TestQueryPhotosSortByDateDescending(t *testing.T) {
 	assertIDs(t, got, "new", "mid", "old")
 }
 
-func TestQueryPhotosIgnoresExtensionFilteringForNow(t *testing.T) {
-	photos := makePhotos(3)
+func TestQueryPhotosFilterByExtension(t *testing.T) {
+	photos := []Photo{
+		{
+			ID: "jpg",
+			File: scanner.File{
+				RelativePath: "photo.jpg",
+			},
+		},
+		{
+			ID: "png",
+			File: scanner.File{
+				RelativePath: "photo.png",
+			},
+		},
+		{
+			ID: "jpg2",
+			File: scanner.File{
+				RelativePath: "anotherphoto.jpg",
+			},
+		},
+	}
 
 	got := QueryPhotos(photos, Query{
 		Extension: "jpg",
 	})
 
-	assertIDs(t, got, "0", "1", "2")
+	assertIDs(t, got, "jpg", "jpg2")
+}
+
+func TestQueryPhotosFilterThenSortThenPaginate(t *testing.T) {
+	photos := []Photo{
+		{
+			ID: "1",
+			File: scanner.File{
+				RelativePath: "a.png",
+			},
+		},
+		{
+			ID: "2",
+			File: scanner.File{
+				RelativePath: "c.jpg",
+			},
+		},
+		{
+			ID: "3",
+			File: scanner.File{
+				RelativePath: "a.jpg",
+			},
+		},
+	}
+
+	got := QueryPhotos(photos, Query{
+		Extension: "jpg",
+		Sort:      SortByPath,
+		Order:     SortAsc,
+		Limit:     1,
+	})
+
+	assertIDs(t, got, "3")
 }
