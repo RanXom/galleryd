@@ -1,6 +1,7 @@
 package api
 
 import (
+	"net/http"
 	"net/http/httptest"
 	"testing"
 
@@ -207,5 +208,22 @@ func TestParseQueryOrderWithoutSort(t *testing.T) {
 			gallery.SortDesc,
 			query.Order,
 		)
+	}
+}
+
+func TestParseQueryExtension(t *testing.T) {
+	req := httptest.NewRequest(
+		http.MethodGet,
+		"/api/photos?extension=jpg",
+		nil,
+	)
+
+	got, err := parseQuery(req)
+	if err != nil {
+		t.Fatalf("parseQuery() error = %v", err)
+	}
+
+	if got.Extension != "jpg" {
+		t.Fatalf("expected extension %q, got %q", "jpg", got.Extension)
 	}
 }
