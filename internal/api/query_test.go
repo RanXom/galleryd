@@ -227,3 +227,24 @@ func TestParseQueryExtension(t *testing.T) {
 		t.Fatalf("expected extension %q, got %q", "jpg", got.Extension)
 	}
 }
+
+func TestParseQuerySearch(t *testing.T) {
+	req := httptest.NewRequest(
+		"http.MethodGet",
+		"/api/photos?q=vacation",
+		nil,
+	)
+
+	got, err := parseQuery(req)
+	if err != nil {
+		t.Fatalf("parseQuery() error = %v", err)
+	}
+
+	if got.Search != "vacation" {
+		t.Fatalf(
+			"expected search %q, got %q",
+			"vacation",
+			got.Search,
+		)
+	}
+}
