@@ -26,4 +26,5 @@ type Query struct {
 	Order SortOrder
 
 	Extension string
+	Search    string
 }

@@ -311,3 +311,13 @@ func TestQueryPhotosFilterThenSortThenPaginate(t *testing.T) {
 
 	assertIDs(t, got, "3")
 }
+
+func TestQueryPhotosIgnoreSearchForNow(t *testing.T) {
+	photos := makePhotos(3)
+
+	got := QueryPhotos(photos, Query{
+		Search: "vacation",
+	})
+
+	assertIDs(t, got, "0", "1", "2")
+}
