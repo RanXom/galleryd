@@ -312,12 +312,54 @@ func TestQueryPhotosFilterThenSortThenPaginate(t *testing.T) {
 	assertIDs(t, got, "3")
 }
 
-func TestQueryPhotosIgnoreSearchForNow(t *testing.T) {
-	photos := makePhotos(3)
+func TestQueryPhotosSearchByRelativePath(t *testing.T) {
+	photos := []Photo{
+		{
+			ID: "vacation",
+			File: scanner.File{
+				RelativePath: "photos/vacation/beach.jpg",
+			},
+		},
+		{
+			ID: "work",
+			File: scanner.File{
+				RelativePath: "photos/work/meeting.jpg",
+			},
+		},
+		{
+			ID: "vacation2",
+			File: scanner.File{
+				RelativePath: "photos/vacation/mountains.jpg",
+			},
+		},
+	}
 
 	got := QueryPhotos(photos, Query{
 		Search: "vacation",
 	})
 
-	assertIDs(t, got, "0", "1", "2")
+	assertIDs(t, got, "vacation", "vacation2")
+}
+
+func TestQueryPhotosSearchIsCaseInsensitive(t *testing.T) {
+	photos := []Photo{
+		{
+			ID: "1",
+			File: scanner.File{
+				RelativePath: "Photos/Vacation/Beach.jpg",
+			},
+		},
+		{
+			ID: "2",
+			File: scanner.File{
+				RelativePath: "photos/work/meeting.jpg",
+			},
+		},
+	}
+
+	got := QueryPhotos(photos, Query{
+		Search: "VACATION",
+	})
+
+	assertIDs(t, got, "1")
 }

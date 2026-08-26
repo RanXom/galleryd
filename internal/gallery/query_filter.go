@@ -9,22 +9,54 @@ func filterQueryPhotos(
 	photos []Photo,
 	query Query,
 ) []Photo {
-	if query.Extension == "" {
-		return photos
-	}
-
 	filtered := make([]Photo, 0, len(photos))
 
 	for _, photo := range photos {
-		ext := strings.TrimPrefix(filepath.Ext(photo.RelativePath), ".")
-
-		if strings.EqualFold(
-			strings.TrimPrefix(ext, "."),
-			strings.TrimPrefix(query.Extension, "."),
-		) {
-			filtered = append(filtered, photo)
+		if !matchesExtension(photo, query.Extension) {
+			continue
 		}
+
+		if !matchesSearch(photo, query.Search) {
+			continue
+		}
+
+		filtered = append(filtered, photo)
 	}
 
 	return filtered
+}
+
+func matchesExtension(
+	photo Photo,
+	extension string,
+) bool {
+	if extension == "" {
+		return true
+	}
+
+	ext := strings.TrimPrefix(
+		filepath.Ext(photo.RelativePath),
+		".",
+	)
+
+	extension = strings.TrimPrefix(
+		extension,
+		".",
+	)
+
+	return strings.EqualFold(ext, extension)
+}
+
+func matchesSearch(
+	photo Photo,
+	search string,
+) bool {
+	if search == "" {
+		return true
+	}
+
+	return strings.Contains(
+		strings.ToLower(photo.RelativePath),
+		strings.ToLower(search),
+	)
 }
