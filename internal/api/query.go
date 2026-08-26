@@ -62,5 +62,8 @@ func parseQuery(r *http.Request) (gallery.Query, error) {
 		}
 	}
 
+	query.Extension = values.Get("extension")
+	query.Search = values.Get("q")
+
 	return query, nil
 }

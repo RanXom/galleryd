@@ -250,3 +250,162 @@ func TestQueryPhotosSortByDateDescending(t *testing.T) {
 
 	assertIDs(t, got, "new", "mid", "old")
 }
+
+func TestQueryPhotosFilterByExtension(t *testing.T) {
+	photos := []Photo{
+		{
+			ID: "jpg",
+			File: scanner.File{
+				RelativePath: "photo.jpg",
+			},
+		},
+		{
+			ID: "png",
+			File: scanner.File{
+				RelativePath: "photo.png",
+			},
+		},
+		{
+			ID: "jpg2",
+			File: scanner.File{
+				RelativePath: "anotherphoto.jpg",
+			},
+		},
+	}
+
+	got := QueryPhotos(photos, Query{
+		Extension: "jpg",
+	})
+
+	assertIDs(t, got, "jpg", "jpg2")
+}
+
+func TestQueryPhotosFilterThenSortThenPaginate(t *testing.T) {
+	photos := []Photo{
+		{
+			ID: "1",
+			File: scanner.File{
+				RelativePath: "a.png",
+			},
+		},
+		{
+			ID: "2",
+			File: scanner.File{
+				RelativePath: "c.jpg",
+			},
+		},
+		{
+			ID: "3",
+			File: scanner.File{
+				RelativePath: "a.jpg",
+			},
+		},
+	}
+
+	got := QueryPhotos(photos, Query{
+		Extension: "jpg",
+		Sort:      SortByPath,
+		Order:     SortAsc,
+		Limit:     1,
+	})
+
+	assertIDs(t, got, "3")
+}
+
+func TestQueryPhotosSearchByRelativePath(t *testing.T) {
+	photos := []Photo{
+		{
+			ID: "vacation",
+			File: scanner.File{
+				RelativePath: "photos/vacation/beach.jpg",
+			},
+		},
+		{
+			ID: "work",
+			File: scanner.File{
+				RelativePath: "photos/work/meeting.jpg",
+			},
+		},
+		{
+			ID: "vacation2",
+			File: scanner.File{
+				RelativePath: "photos/vacation/mountains.jpg",
+			},
+		},
+	}
+
+	got := QueryPhotos(photos, Query{
+		Search: "vacation",
+	})
+
+	assertIDs(t, got, "vacation", "vacation2")
+}
+
+func TestQueryPhotosSearchIsCaseInsensitive(t *testing.T) {
+	photos := []Photo{
+		{
+			ID: "1",
+			File: scanner.File{
+				RelativePath: "Photos/Vacation/Beach.jpg",
+			},
+		},
+		{
+			ID: "2",
+			File: scanner.File{
+				RelativePath: "photos/work/meeting.jpg",
+			},
+		},
+	}
+
+	got := QueryPhotos(photos, Query{
+		Search: "VACATION",
+	})
+
+	assertIDs(t, got, "1")
+}
+
+func TestQueryPhotosFilterSearchSortThenPaginate(t *testing.T) {
+	photos := []Photo{
+		{
+			ID: "1",
+			File: scanner.File{
+				RelativePath: "photos/work/report.jpg",
+			},
+		},
+		{
+			ID: "2",
+			File: scanner.File{
+				RelativePath: "photos/vacation/zebra.jpg",
+			},
+		},
+		{
+			ID: "3",
+			File: scanner.File{
+				RelativePath: "photos/vacation/apple.jpg",
+			},
+		},
+		{
+			ID: "4",
+			File: scanner.File{
+				RelativePath: "photos/vacation/beach.png",
+			},
+		},
+		{
+			ID: "5",
+			File: scanner.File{
+				RelativePath: "photos/vacation/mountains.jpg",
+			},
+		},
+	}
+
+	got := QueryPhotos(photos, Query{
+		Extension: "jpg",
+		Search:    "vacation",
+		Sort:      SortByPath,
+		Order:     SortAsc,
+		Offset:    1,
+		Limit:     1,
+	})
+
+	assertIDs(t, got, "5")
+}
