@@ -363,3 +363,49 @@ func TestQueryPhotosSearchIsCaseInsensitive(t *testing.T) {
 
 	assertIDs(t, got, "1")
 }
+
+func TestQueryPhotosFilterSearchSortThenPaginate(t *testing.T) {
+	photos := []Photo{
+		{
+			ID: "1",
+			File: scanner.File{
+				RelativePath: "photos/work/report.jpg",
+			},
+		},
+		{
+			ID: "2",
+			File: scanner.File{
+				RelativePath: "photos/vacation/zebra.jpg",
+			},
+		},
+		{
+			ID: "3",
+			File: scanner.File{
+				RelativePath: "photos/vacation/apple.jpg",
+			},
+		},
+		{
+			ID: "4",
+			File: scanner.File{
+				RelativePath: "photos/vacation/beach.png",
+			},
+		},
+		{
+			ID: "5",
+			File: scanner.File{
+				RelativePath: "photos/vacation/mountains.jpg",
+			},
+		},
+	}
+
+	got := QueryPhotos(photos, Query{
+		Extension: "jpg",
+		Search:    "vacation",
+		Sort:      SortByPath,
+		Order:     SortAsc,
+		Offset:    1,
+		Limit:     1,
+	})
+
+	assertIDs(t, got, "5")
+}
