@@ -1,5 +1,7 @@
 package gallery
 
+import "time"
+
 type SortField string
 
 const (
@@ -27,4 +29,7 @@ type Query struct {
 
 	Extension string
 	Search    string
+
+	From time.Time
+	To   time.Time
 }
