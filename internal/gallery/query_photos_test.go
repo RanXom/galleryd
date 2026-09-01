@@ -409,3 +409,53 @@ func TestQueryPhotosFilterSearchSortThenPaginate(t *testing.T) {
 
 	assertIDs(t, got, "5")
 }
+
+func TestQueryPhotosIgnoresDateRangesForNow(t *testing.T) {
+	photos := []Photo{
+		{
+			ID: "old",
+			Metadata: metadata.Metadata{
+				DateTaken: time.Date(
+					2024,
+					1,
+					1,
+					0,
+					0,
+					0,
+					0,
+					time.UTC,
+				),
+			},
+		},
+		{
+			ID: "new",
+			Metadata: metadata.Metadata{
+				DateTaken: time.Date(
+					2025,
+					1,
+					1,
+					0,
+					0,
+					0,
+					0,
+					time.UTC,
+				),
+			},
+		},
+	}
+	
+	got := QueryPhotos(photos, Query{
+				From: time.Date(
+			2025,
+			1,
+			1,
+			0,
+			0,
+			0,
+			0,
+			time.UTC,
+		),
+	})
+
+	assertIDs(t, got, "old", "new")
+}
